@@ -13,7 +13,7 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "declaration": false,
-    "ignoreDeprecations": "6.0"
+    
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
