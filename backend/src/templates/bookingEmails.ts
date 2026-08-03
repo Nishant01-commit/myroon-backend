@@ -2,12 +2,13 @@ import { wrapper } from './emailLayout';
 import { IBooking } from '../models/Booking';
 import { IHotel } from '../models/Hotel';
 import { IRoom } from '../models/Room';
+import { Types } from "mongoose";
 
 export const bookingConfirmationEmail = (params: {
   customerName: string;
-  booking: IBooking;
-  hotel: IHotel;
-  room: IRoom;
+  booking: any;
+  hotel: any;
+  room: any;
   invoiceUrl?: string;
 }): string => {
   const { customerName, booking, hotel, room, invoiceUrl } = params;

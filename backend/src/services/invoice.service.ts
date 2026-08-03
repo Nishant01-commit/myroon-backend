@@ -7,6 +7,26 @@ import { IHotel } from '../models/Hotel';
 import { IRoom } from '../models/Room';
 import { IPayment } from '../models/Payment';
 import { IUser } from '../models/User';
+import {HydratedDocument} from 'mongoose';
+type InvoicePdfData = {
+  booking: IBooking;
+  hotel: IHotel;
+  room: IRoom;
+  payment: IPayment;
+  customer: IUser;
+};
+
+export type InvoiceBooking = HydratedDocument<IBooking>;
+export type InvoiceHotel = HydratedDocument<IHotel>;
+
+export type InvoiceRoom = HydratedDocument<
+  Omit<IRoom, 'hotel'> & {
+    hotel: IHotel;
+  }
+>;
+
+export type InvoicePayment = HydratedDocument<IPayment>;
+export type InvoiceCustomer = HydratedDocument<IUser>;
 
 const uploadPdfBuffer = (buffer: Buffer, publicId: string): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -20,16 +40,21 @@ const uploadPdfBuffer = (buffer: Buffer, publicId: string): Promise<string> =>
     stream.end(buffer);
   });
 
-const renderInvoicePdf = (params: {
-  invoiceNumber: string;
-  booking: IBooking;
-  hotel: IHotel;
-  room: IRoom;
-  payment: IPayment;
-  customer: IUser;
-  qrDataUrl: string;
-}): Promise<Buffer> => {
-  const { invoiceNumber, booking, hotel, room, payment, customer, qrDataUrl } = params;
+const renderInvoicePdf = (
+  params: InvoicePdfData & {
+    invoiceNumber: string;
+    qrDataUrl: string;
+  }
+): Promise<Buffer> => {
+  const {
+    invoiceNumber,
+    booking,
+    hotel,
+    room,
+    payment,
+    customer,
+    qrDataUrl,
+  } = params;
 
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ size: 'A4', margin: 50 });
@@ -112,6 +137,7 @@ const renderInvoicePdf = (params: {
   });
 };
 
+
 export const generateInvoice = async (
   booking: IBooking,
   hotel: IHotel,
@@ -124,6 +150,8 @@ export const generateInvoice = async (
 
   const pdfBuffer = await renderInvoicePdf({ invoiceNumber, booking, hotel, room, payment, customer, qrDataUrl });
   const pdfUrl = await uploadPdfBuffer(pdfBuffer, `invoice-${booking.bookingId}`);
+
+  
 
   return Invoice.create({
     booking: booking._id,
@@ -141,3 +169,5 @@ export const generateInvoice = async (
     qrCodeData: qrDataUrl,
   });
 };
+
+

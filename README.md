@@ -176,7 +176,7 @@ myroomm/
 │   ├── .dockerignore
 │   ├── jest.config.js
 │   ├── package.json
-│   ├── tsconfig.json
+│   ├── .json
 │   └── .env.example
 ├── frontend/               # Next.js 15, static export — see frontend/README.md for what's built vs. still ahead
 │   ├── README.md

@@ -4,18 +4,30 @@ import { IHotel } from '../models/Hotel';
 import Room from '../models/Room';
 import Booking from '../models/Booking';
 import Payment from '../models/Payment';
-import User from '../models/User';
+import User, { IUser } from '../models/User';
 import AuditLog from '../models/AuditLog';
 import { ApiError, ApiResponse, catchAsync } from '../utils/apiHelpers';
 import { AuthRequest } from '../middleware/auth';
 import { razorpay, verifyPaymentSignature } from '../services/razorpay.service';
 import { calculatePricing, recordCouponUsage } from '../services/pricing.service';
-import { generateInvoice } from '../services/invoice.service';
+// import { generateInvoice } from '../services/invoice.service';
 import { sendEmail } from '../services/email.service';
 import { bookingConfirmationEmail, bookingCancellationEmail } from '../templates/bookingEmails';
 import { createNotification } from '../services/notification.service';
 import { logger } from '../config/logger';
 import { env } from '../config/env';
+import {
+  generateInvoice,
+  InvoiceBooking,
+  InvoiceHotel,
+  InvoiceRoom,
+  InvoicePayment,
+  InvoiceCustomer,
+} from '../services/invoice.service';
+import { IBooking } from '../models/Booking';
+import { IRoom } from '../models/Room';
+import { IPayment } from '../models/Payment';
+
 
 const parseStayDates = (checkInRaw: string, checkOutRaw: string) => {
   const checkIn = new Date(checkInRaw);
@@ -167,7 +179,13 @@ export const verifyPayment = catchAsync(async (req: AuthRequest, res: Response) 
   let invoiceUrl: string | undefined;
   if (customer) {
     try {
-      const invoice = await generateInvoice(booking, hotel, room, payment, customer);
+      const invoice = await generateInvoice(
+  booking as unknown as IBooking,
+  hotel as unknown as IHotel,
+  room as unknown as IRoom,
+  payment as unknown as IPayment,
+  customer as unknown as IUser
+);
       booking.invoice = invoice._id;
       await booking.save();
       invoiceUrl = invoice.pdfUrl;
@@ -178,7 +196,7 @@ export const verifyPayment = catchAsync(async (req: AuthRequest, res: Response) 
     await sendEmail({
       to: customer.email,
       subject: `Booking confirmed — ${booking.bookingId}`,
-      html: bookingConfirmationEmail({ customerName: customer.name, booking, hotel, room, invoiceUrl }),
+      html: bookingConfirmationEmail({ customerName: customer.name, booking:booking as any, hotel: hotel as any, room: room as any, invoiceUrl }),
       template: 'booking_confirmation',
       relatedBooking: String(booking._id),
     });
@@ -245,7 +263,7 @@ export const cancelBooking = catchAsync(async (req: AuthRequest, res: Response) 
     await sendEmail({
       to: customer.email,
       subject: `Booking ${booking.bookingId} cancelled`,
-      html: bookingCancellationEmail({ customerName: customer.name, booking, hotel: booking.hotel }),
+      html: bookingCancellationEmail({ customerName: customer.name, booking: booking as any, hotel: booking.hotel as any }),
       template: 'booking_cancellation',
       relatedBooking: String(booking._id),
     });

@@ -71,7 +71,7 @@ export const ownerCancelBooking = catchAsync(async (req: AuthRequest, res: Respo
     await sendEmail({
       to: customer.email,
       subject: `Booking ${booking.bookingId} cancelled by the hotel`,
-      html: bookingCancellationEmail({ customerName: customer.name, booking, hotel: booking.hotel }),
+      html: bookingCancellationEmail({ customerName: customer.name, booking:booking as any , hotel: booking.hotel as any }),
       template: 'booking_cancellation',
       relatedBooking: String(booking._id),
     });
