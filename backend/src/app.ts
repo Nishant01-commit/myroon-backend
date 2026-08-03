@@ -9,7 +9,7 @@ import hpp from 'hpp';
 import mongoose from 'mongoose';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-
+import publicRoomRoutes from "./routes/publicRoom.routes";
 import { env } from './config/env';
 import { morganStream } from './config/logger';
 import { generalLimiter } from './middleware/rateLimiter';
@@ -25,6 +25,8 @@ import adminRoutes from './routes/admin.routes';
 import supportTicketRoutes from './routes/supportTicket.routes';
 
 const app: Application = express();
+app.use("/api/v1/rooms", publicRoomRoutes);
+app.use("/api/v1/hotels", hotelRoutes);
 
 app.use(helmet());
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
