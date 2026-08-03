@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-royal-blue: 30 58 138;
+  --color-royal-blue-deep: 18 35 79;
+  --color-gold: 212 175 55;
+  --color-soft-gray: 244 244 247;
+  --color-ink: 25 27 36;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-feature-settings: 'tnum' 1; /* tabular numerals — prices and dates line up cleanly */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
