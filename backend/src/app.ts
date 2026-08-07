@@ -25,11 +25,21 @@ import adminRoutes from './routes/admin.routes';
 import supportTicketRoutes from './routes/supportTicket.routes';
 
 const app: Application = express();
+
+
+app.use(helmet());
+// app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
+app.use(cors({
+    origin: [
+        "https://myroomm.in",
+        "https://www.myroomm.in"
+    ],
+    credentials: true,
+}));
+
 app.use("/api/v1/rooms", publicRoomRoutes);
 app.use("/api/v1/hotels", hotelRoutes);
 
-app.use(helmet());
-app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
 app.use(compression());
 app.use(
   express.json({
@@ -70,8 +80,7 @@ const swaggerSpec = swaggerJsdoc({
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // All route modules through Phase 5:
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/hotels', hotelRoutes); // rooms are nested: /api/v1/hotels/:hotelId/rooms
+app.use('/api/v1/auth', authRoutes); // rooms are nested: /api/v1/hotels/:hotelId/rooms
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
