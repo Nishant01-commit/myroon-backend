@@ -39,6 +39,12 @@ app.use(cors({
 
 app.use("/api/v1/rooms", publicRoomRoutes);
 app.use("/api/v1/hotels", hotelRoutes);
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "MyRoomm backend API is running",
+  });
+});
 
 app.use(compression());
 app.use(
